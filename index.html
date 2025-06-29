@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pitahaya App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+    <style>
+        /* RESET */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* El fondo de la pantalla completa es blanco */
+        html, body {
+            width: 100%;
+            height: 100%;
+            background-color: #fff; /* Fondo blanco para el resto de la pantalla */
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden; /* Evita el scroll horizontal por animaciones */
+        }
+
+        /* ANIMACIONES GLOBALES */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        /* ANIMACIÓN DE PULSO PARA LA PITAHAYA */
+        @keyframes pulseScale {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* ANIMACIÓN DE SOMBRA FLOTANTE PARA LA PITAHAYA */
+        @keyframes floatShadow {
+            0% { box-shadow: 0 5px 15px rgba(250, 213, 79, 0.4); }
+            50% { box-shadow: 0 10px 25px rgba(250, 213, 79, 0.6); }
+            100% { box-shadow: 0 5px 15px rgba(250, 213, 79, 0.4); }
+        }
+
+        /* ANIMACIÓN DE GLOW PARA TÍTULOS Y ELEMENTOS CLAVE */
+        @keyframes textGlow {
+            0% { text-shadow: 0 0 5px rgba(255,255,255,0.7), 0 0 10px rgba(255,255,255,0.4); }
+            50% { text-shadow: 0 0 10px rgba(255,255,255,0.9), 0 0 20px rgba(255,255,255,0.6); }
+            100% { text-shadow: 0 0 5px rgba(255,255,255,0.7), 0 0 10px rgba(255,255,255,0.4); }
+        }
+         @keyframes textGlowYellow { /* Variación para el título de la pitahaya */
+            0% { text-shadow: 0 0 5px rgba(250, 213, 79, 0.7), 0 0 10px rgba(250, 213, 79, 0.4); }
+            50% { text-shadow: 0 0 10px rgba(250, 213, 79, 0.9), 0 0 20px rgba(250, 213, 79, 0.6); }
+            100% { text-shadow: 0 0 5px rgba(250, 213, 79, 0.7), 0 0 10px rgba(250, 213, 79, 0.4); }
+        }
+
+
+        /* ANIMACIÓN DE BRILLO PARA INDICADORES */
+        @keyframes indicatorGlow {
+            0% { box-shadow: 0 0 5px rgba(255,255,255,0.5); }
+            50% { box-shadow: 0 0 15px rgba(255,255,255,1); }
+            100% { box-shadow: 0 0 5px rgba(255,255,255,0.5); }
+        }
+
+        /* FONDO DINÁMICO (simulación de partículas o brillo sutil en el fondo.svg) */
+        @keyframes backgroundGradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* ANIMACIÓN PARA LA FLECHA INDICADORA */
+        @keyframes bounceAndGlow {
+            0%, 100% { transform: translateY(0); opacity: 1; filter: drop-shadow(0 0 5px #FAD54F); }
+            50% { transform: translateY(5px); opacity: 0.8; filter: drop-shadow(0 0 15px #FAD54F); }
+        }
+
+
+        /* CONTENEDOR PRINCIPAL - Se centra y tiene el fondo.svg */
+        .container {
+            width: 360px; /* Ancho fijo para simular el formato celular */
+            max-width: 100%; /* Asegura que no exceda el ancho de la pantalla en dispositivos pequeños */
+            margin: 0 auto; /* Centra el contenedor horizontalmente */
+            min-height: 100vh; /* Asegura que el contenedor ocupe al menos la altura de la ventana */
+            display: flex;
+            flex-direction: column;
+            /* Aquí se aplica fondo.svg SÓLO al contenedor principal, centrado y cubriendo */
+            background: url("fondo.svg") no-repeat center center/cover;
+            position: relative;
+            overflow: hidden; /* Oculta cualquier parte del fondo que se desborde del contenedor */
+            transition: opacity 0.5s ease-in-out; /* Transición para fade-in/out */
+        }
+
+        /* SUPERPOSICIÓN DE GRADIENTE EN EL FONDO DEL CONTENEDOR PARA UN EFECTO DINÁMICO */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(74, 144, 226, 0.1), rgba(250, 213, 79, 0.1), rgba(74, 144, 226, 0.1));
+            background-size: 200% 200%;
+            animation: backgroundGradientShift 15s ease infinite alternate;
+            pointer-events: none; /* Permite hacer clic a través de esta capa */
+            z-index: 1; /* Asegura que esté por debajo del contenido */
+        }
+        .header, .hero, .hero-title, .curated, .bottom-nav {
+            position: relative; /* Asegura que el contenido esté por encima del ::before */
+            z-index: 2;
+        }
+
+
+        /* HEADER */
+        .header {
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: .5rem .75rem;
+            background: rgba(29,42,71,0.85);
+            backdrop-filter: blur(5px); /* Efecto de cristal esmerilado para un toque futurista */
+            -webkit-backdrop-filter: blur(5px); /* Para compatibilidad con Safari */
+        }
+        .header-left { display: flex; align-items: center; }
+        .logo { width: 28px; height: 28px; }
+        .home-text {
+            color: #FFFFFF; /* Más contraste */
+            margin-left: .5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5); /* Sombra para mejor legibilidad */
+        }
+        .header-rect {
+            position: absolute;
+            right: .75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 6px;
+            background: #4A90E2;
+            border-radius: 3px;
+            animation: textGlow 2s ease-in-out infinite alternate; /* Animación de brillo sutil */
+        }
+
+        /* HERO */
+        .hero { display: flex; justify-content: center; margin-top: -1rem; }
+        /* pitahaya.svg como botón principal - Con animaciones */
+        .hero-img {
+            width: 50vw;
+            max-width: 180px;
+            height: auto;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out;
+            animation: pulseScale 2s ease-in-out infinite alternate; /* Animación de pulso */
+            position: relative;
+            z-index: 5; /* Asegura que la pitahaya esté por encima del fondo dinámico */
+            filter: drop-shadow(0 5px 15px rgba(250, 213, 79, 0.4)); /* Sombra inicial */
+        }
+        .hero-img:hover {
+            transform: scale(1.08); /* Efecto de "zoom" al pasar el ratón */
+            animation: none; /* Detiene el pulso al interactuar */
+        }
+        /* Sombra flotante para pitahaya */
+        .hero-img::after {
+            content: '';
+            position: absolute;
+            bottom: -15px; /* Ajusta la posición de la sombra */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%; /* Ancho de la sombra */
+            height: 10px; /* Alto de la sombra */
+            background: radial-gradient(ellipse at center, rgba(250, 213, 79, 0.7) 0%, rgba(250, 213, 79, 0) 70%);
+            filter: blur(8px); /* Desenfoque de la sombra */
+            animation: floatShadow 2s ease-in-out infinite alternate;
+            z-index: 4; /* Debajo de la pitahaya pero encima del fondo */
+        }
+
+
+        /* TÍTULO */
+        .hero-title { text-align: center; margin-top: 1.5rem; }
+        .hero-title h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: #FAD54F; /* Color amarillo, funciona bien con la sombra/glow */
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+            animation: textGlowYellow 2s ease-in-out infinite alternate; /* Animación de brillo sutil */
+        }
+
+        /* FLECHA INDICADORA */
+        .scroll-indicator-arrow {
+            text-align: center;
+            margin-top: 1rem; /* Espacio encima de la pitahaya */
+            margin-bottom: 0.5rem; /* Espacio debajo de la pitahaya */
+            color: #FAD54F; /* Color de la flecha */
+            font-size: 2rem; /* Tamaño de la flecha */
+            animation: bounceAndGlow 1.8s ease-in-out infinite; /* Animación de rebote y brillo */
+            text-shadow: 0 0 5px rgba(250, 213, 79, 0.5); /* Sombra inicial para la flecha */
+            z-index: 3; /* Asegura que la flecha esté por encima del fondo */
+        }
+
+
+        /* CURATED GUIDES */
+        .curated { padding: 2rem 1rem 1rem; flex: 1; }
+        .curated h3 {
+            font-size: 1.1rem;
+            color: #FFFFFF; /* Cambiado a blanco para mejor contraste */
+            margin-bottom: .5rem;
+            text-align: center;
+            text-shadow: 0 0 5px rgba(0,0,0,0.6); /* Sombra para mejor legibilidad */
+        }
+        .curated-rect {
+            width: 40px;
+            height: 5px;
+            background: #4A90E2;
+            margin: .25rem auto 1rem;
+            border-radius: 2px;
+        }
+        .cards-wrapper { display: flex; align-items: center; }
+        .arrow {
+            background: rgba(0,0,0,0.2);
+            border: none;
+            color: #FFF;
+            font-size: 1.5rem;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+        .arrow:hover {
+            transform: scale(1.2);
+            background: rgba(0,0,0,0.4);
+        }
+        .cards-row {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding: .5rem 0;
+            scroll-snap-type: x mandatory;
+            scroll-padding: 0 1rem;
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        .cards-row::-webkit-scrollbar { display: none; }
+        .card {
+            flex: 0 0 280px;
+            scroll-snap-align: center;
+            background: #FFF;
+            color: #1D2A47;
+            border-radius: 16px;
+            padding: 1.25rem;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px) scale(1.01);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .card h4 { font-size: 1rem; margin-bottom: .5rem; }
+        .card p { font-size: .85rem; margin-bottom: 1rem; }
+        .img-pair { display: flex; gap: .5rem; justify-content: center; }
+        .img-pair img { width: 40%; border-radius: 8px; }
+
+        /* BOTTOM NAV INDICATORS */
+        .bottom-nav {
+            width: 360px;
+            max-width: 100%;
+            position: fixed;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: center;
+            z-index: 20;
+        }
+        .indicators { display: flex; gap: .5rem; }
+        .indicator {
+            width: 30px;
+            height: 6px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 3px;
+            transition: background .3s, box-shadow .3s;
+        }
+        .indicator.active {
+            background: #FFF;
+            animation: indicatorGlow 1.5s ease-in-out infinite alternate; /* Brillo para el activo */
+        }
+
+        /* DETAIL FRAME - Con transición de opacidad */
+        #detail {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white; /* El "frame blanco" para el detalle */
+            z-index: 100;
+            display: none; /* Inicia oculto, controlado por JS */
+            flex-direction: column;
+            overflow: hidden;
+            opacity: 0; /* Para la transición de fade */
+            transition: opacity 0.5s ease-in-out;
+        }
+        #detail.active {
+            opacity: 1; /* Clase para activar la visibilidad y transición */
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background-color: #4A90E2;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 110;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+        .back-btn:hover {
+            transform: scale(1.1);
+            background-color: #3a7bd2;
+        }
+        .detail-iframe-wrapper {
+            flex-grow: 1;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .detail-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            max-width: 360px; /* Restringe el ancho del iframe al tamaño de la "celular" */
+        }
+
+        /* MEDIA QUERY */
+        @media (min-width: 480px) {
+            .container { width: 400px; }
+            .hero-img { width: 45vw; max-width: 200px; }
+            .hero-title h2 { font-size: 1.75rem; }
+            .card { flex: 0 0 300px; padding: 1.5rem; }
+            .indicator { width: 40px; height: 8px; }
+            .detail-iframe { max-width: 400px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="home" class="container">
+        <header class="header">
+            <div class="header-left">
+                <img src="pitahaya.svg" alt="Logo Pitahaya" class="logo" />
+                <span class="home-text">Home</span>
+            </div>
+            <div class="header-rect"></div>
+        </header>
+
+        <div class="scroll-indicator-arrow">
+            <i class="fas fa-arrow-down"></i> </div>
+
+        <section class="hero">
+            <img src="pitahaya.svg" alt="Pitahaya grande" class="hero-img" id="btnDetail" />
+        </section>
+
+        <section class="hero-title">
+            <h2>Alcoholic Beverage Guide</h2>
+        </section>
+
+        <section class="curated">
+            <h3>Curated Guides</h3>
+            <div class="curated-rect"></div>
+            <div class="cards-wrapper">
+                <button class="arrow prev" id="prevBtn" aria-label="Anterior">‹</button>
+                <div class="cards-row" id="cardsRow">
+                    <div class="card">
+                        <h4>Health Benefits</h4>
+                        <p>La pitahaya es rica en antioxidantes, vitamina C y fibra.</p>
+                        <div class="img-pair">
+                            <img src="benefit1.jpg" alt="Antioxidantes" />
+                            <img src="benefit2.jpg" alt="Fibra dietética" />
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h4>Hydration</h4>
+                        <p>Más del 90% de agua, ayuda a mantener la piel hidratada.</p>
+                    </div>
+                    <div class="card">
+                        <h4>Vitamin C</h4>
+                        <p>Refuerza el sistema inmune y protege contra infecciones.</p>
+                    </div>
+                </div>
+                <button class="arrow next" id="nextBtn" aria-label="Siguiente">›</button>
+            </div>
+        </section>
+
+        <nav class="bottom-nav">
+            <div class="indicators">
+                <span class="indicator active"></span>
+                <span class="indicator"></span>
+                <span class="indicator"></span>
+            </div>
+        </nav>
+    </div>
+
+    <div id="detail" class="container">
+        <button id="btnBack" class="back-btn" aria-label="Volver">←</button>
+        <div class="detail-iframe-wrapper">
+            <iframe id="externalPageFrame" class="detail-iframe" src="https://lavender-amelita-92.tiiny.site" frameborder="0"></iframe>
+        </div>
+    </div>
+
+    <script>
+        // Scroll funcional para tarjetas
+        const cardsRow = document.getElementById('cardsRow');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        // Tamaño de desplazamiento igual al ancho de la tarjeta + gap (1rem = 16px por defecto)
+        const CARD_WIDTH = 280 + 16;
+
+        prevBtn.addEventListener('click', () => {
+            cardsRow.scrollBy({ left: -CARD_WIDTH, behavior: 'smooth' });
+        });
+        nextBtn.addEventListener('click', () => {
+            cardsRow.scrollBy({ left: CARD_WIDTH, behavior: 'smooth' });
+        });
+
+        // Alternar indicadores al hacer scroll
+        const indicators = document.querySelectorAll('.indicator');
+        cardsRow.addEventListener('scroll', () => {
+            const index = Math.round(cardsRow.scrollLeft / CARD_WIDTH);
+            indicators.forEach((dot, i) => {
+                dot.classList.toggle('active', i === index);
+            });
+        });
+
+        // Lógica para mostrar/ocultar el frame de detalle con transiciones
+        const btnDetail = document.getElementById('btnDetail');
+        const btnBack = document.getElementById('btnBack');
+        const homeFrame = document.getElementById('home');
+        const detailFrame = document.getElementById('detail');
+        const externalPageFrame = document.getElementById('externalPageFrame');
+
+        btnDetail.addEventListener('click', () => {
+            // Inicia la animación de fade-out para homeFrame
+            homeFrame.style.opacity = '0';
+            homeFrame.classList.remove('active'); // Por si se había usado
+
+            // Después de la transición, oculta homeFrame y muestra detailFrame
+            setTimeout(() => {
+                homeFrame.style.display = 'none';
+                detailFrame.style.display = 'flex'; // Muestra como flex para centrar contenido
+                // Inicia la animación de fade-in para detailFrame
+                setTimeout(() => {
+                    detailFrame.style.opacity = '1';
+                    detailFrame.classList.add('active'); // Añade la clase para la transición
+                }, 50); // Pequeño retraso para asegurar que el display:flex se aplique antes de la opacidad
+            }, 500); // Duración de la transición de fade-out (0.5s)
+        });
+
+        btnBack.addEventListener('click', () => {
+            // Inicia la animación de fade-out para detailFrame
+            detailFrame.style.opacity = '0';
+            detailFrame.classList.remove('active');
+
+            setTimeout(() => {
+                detailFrame.style.display = 'none';
+                homeFrame.style.display = 'flex'; // Vuelve a mostrar el home como flex
+                // Inicia la animación de fade-in para homeFrame
+                setTimeout(() => {
+                    homeFrame.style.opacity = '1';
+                    homeFrame.classList.add('active');
+                }, 50);
+            }, 500); // Duración de la transición de fade-out (0.5s)
+        });
+
+        // Inicialmente ocultar el frame de detalle y asegurar que homeFrame esté visible al cargar
+        document.addEventListener('DOMContentLoaded', () => {
+            detailFrame.style.display = 'none';
+            homeFrame.style.opacity = '1';
+            homeFrame.style.display = 'flex';
+            homeFrame.classList.add('active');
+        });
+    </script>
+</body>
+</html>
